@@ -1,0 +1,45 @@
+type TaskList {
+  id: Int!
+  name: String!
+
+  tasks: [Task]
+}
+
+type MutationTaskList {
+  id: Int!
+  name: String!
+
+  create: Boolean!
+  read: Boolean!
+  update: Boolean!
+  delete: Boolean!
+}
+
+input CreateTaskListInput {
+  name: String!
+  create: Boolean!
+  read: Boolean!
+  update: Boolean!
+  delete: Boolean!
+}
+
+input UpdateTaskListInput {
+  id: Int!
+  name: String
+  create: Boolean
+  read: Boolean
+  update: Boolean
+  delete: Boolean
+}
+
+type Query {
+  myLists: [TaskList]
+  findList(id: Int!): TaskList
+  otherLists: [TaskList]
+}
+
+type Mutation {
+  createTaskList(createTaskListInput: CreateTaskListInput!): MutationTaskList
+  updateTaskList(updateTaskListInput: UpdateTaskListInput!): MutationTaskList
+  removeTaskList(id: Int!): TaskList
+}
