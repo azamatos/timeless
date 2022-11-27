@@ -1,7 +1,11 @@
-import { Resolver, Query, Mutation, Args, Context } from '@nestjs/graphql';
 import { Request } from 'express';
-import { CreateTaskInput, UpdateTaskInput } from '../types/graphql';
+import { Resolver, Query, Mutation, Args, Context } from '@nestjs/graphql';
+
+// project imports
 import { TaskService } from './task.service';
+
+// types
+import { CreateTaskInput, UpdateTaskInput } from '../types/graphql';
 
 @Resolver('Task')
 export class TaskResolver {
@@ -15,11 +19,6 @@ export class TaskResolver {
     const { authorization } = req.headers;
     return this.taskService.create(authorization, createTaskInput);
   }
-
-  // @Query('getListTasks')
-  // getTasksByList(@Args('id') id: number) {
-  //   return this.taskService.findTasksByList(id);
-  // }
 
   @Query('getTask')
   findOne(@Context('req') req: Request, @Args('id') id: number) {

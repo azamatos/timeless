@@ -1,11 +1,17 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
+
+// project imports
+import { PrismaService } from '../prisma/prisma.service';
+
+// utils
+import { getToken } from '../utils/token';
+
+// types
 import {
   CreateTaskListInput,
   TaskList,
   UpdateTaskListInput,
 } from 'src/types/graphql';
-import { PrismaService } from '../prisma/prisma.service';
-import { getToken } from '../utils/token';
 
 @Injectable()
 export class TaskListService {

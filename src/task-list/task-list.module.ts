@@ -1,7 +1,9 @@
 import { Module } from '@nestjs/common';
-import { TaskListService } from './task-list.service';
-import { TaskListResolver } from './task-list.resolver';
+
+// third party
 import { TaskListController } from './task-list.controller';
+import { TaskListResolver } from './task-list.resolver';
+import { TaskListService } from './task-list.service';
 
 @Module({
   providers: [TaskListResolver, TaskListService],

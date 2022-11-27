@@ -1,7 +1,13 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
-import { PrismaService } from '../prisma/prisma.service';
+
+// project imports
 import { TaskListService } from '../task-list/task-list.service';
+import { PrismaService } from '../prisma/prisma.service';
+
+// types
 import { CreateTaskInput, Task, UpdateTaskInput } from '../types/graphql';
+
+// utils
 import { getToken } from '../utils/token';
 
 @Injectable()
@@ -111,6 +117,7 @@ export class TaskService {
       if (task) {
         return this.prisma.task.delete({
           where: { id: task.id },
+          select: { id: true, name: true, isCompleted: true, TaskList: true },
         });
       }
     } catch (err) {

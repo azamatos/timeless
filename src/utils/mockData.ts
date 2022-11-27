@@ -1,14 +1,14 @@
 const mockUser = {
-  login: 'TimeLess',
+  login: 'Jonny Deeepp',
   password: 'TimeLess2022',
 };
 
 const mockTaskList = {
   name: 'Home Duty',
-  create: false,
-  read: false,
-  update: false,
-  delete: false,
+  create: true,
+  read: true,
+  update: true,
+  delete: true,
 };
 
 const mockTask = {
@@ -18,7 +18,14 @@ const mockTask = {
   name: 'Wash the dishes',
 };
 
-const token =
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MjMsImxvZ2luIjoiUmVnaXNlciIsImlhdCI6MTY2OTQ2MDE4NX0.bRR3A68Jc_hiOoMSFJGj-fZkxeYcmNu7oZAEGMZn8yQ';
+const taskUser = {
+  login: 'John Doe',
+  password: 'Timeless2022',
+};
 
-export { mockUser, mockTaskList, token, mockTask };
+const taskListUser = {
+  login: 'John Wick',
+  password: 'Timeless2022',
+};
+
+export { mockUser, mockTaskList, taskListUser, taskUser, mockTask };

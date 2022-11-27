@@ -1,5 +1,9 @@
 import { Resolver, Query, Mutation, Args } from '@nestjs/graphql';
+
+// project imports
 import { UserService } from './user.service';
+
+// types
 import { UserInput } from '../types/graphql';
 
 @Resolver('User')

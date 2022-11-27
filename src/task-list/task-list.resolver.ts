@@ -1,8 +1,11 @@
-import { Resolver, Query, Mutation, Args, Context } from '@nestjs/graphql';
 import { Request } from 'express';
-import { CreateTaskListInput, UpdateTaskListInput } from '../types/graphql';
+import { Resolver, Query, Mutation, Args, Context } from '@nestjs/graphql';
 
+// project imports
 import { TaskListService } from './task-list.service';
+
+// types
+import { CreateTaskListInput, UpdateTaskListInput } from '../types/graphql';
 
 @Resolver('TaskList')
 export class TaskListResolver {

@@ -1,15 +1,48 @@
+import { Request } from 'express';
 import { Test } from '@nestjs/testing';
+
+// project imports
+import { TaskListService } from '../task-list/task-list.service';
 import { PrismaService } from '../prisma/prisma.service';
+import { UserService } from '../user/user.service';
 import { TaskController } from './task.controller';
 import { TaskService } from './task.service';
-import { mockTaskList, mockTask, token } from '../utils/mockData';
-import { Request } from 'express';
-import { TaskListService } from '../task-list/task-list.service';
+
+// utils
+import { mockTask, mockTaskList } from '../utils/mockData';
+
+// types
+import { TaskList, Task } from 'src/types/graphql';
 
 describe('TaskController', () => {
   let taskController: TaskController;
   let taskService: TaskService;
+  let taskList: TaskList;
+  let newTask: Task;
   const req: Request = {} as Request;
+
+  beforeAll(async () => {
+    const newUser = {
+      login: new Date().toUTCString() + 'taskController',
+      password: 'New Year',
+    };
+
+    const prisma = new PrismaService();
+    const userService = new UserService(prisma);
+    const taskListService = new TaskListService(prisma);
+
+    await userService.register(newUser);
+    const { token } = await userService.login(newUser);
+
+    req.headers = {
+      authorization: token,
+    };
+
+    taskList = await taskListService.create(token, {
+      ...mockTaskList,
+      name: newUser.login,
+    });
+  });
 
   beforeEach(async () => {
     const moduleRef = await Test.createTestingModule({
@@ -19,74 +52,86 @@ describe('TaskController', () => {
 
     taskController = moduleRef.get<TaskController>(TaskController);
     taskService = moduleRef.get<TaskService>(TaskService);
-
-    req.headers = {
-      authorization: token,
-    };
   });
 
   describe('create a task ', () => {
     it('should return task data', async () => {
-      const result = {
-        ...mockTask,
-        TaskList: {
-          id: 20,
-          name: mockTaskList.name,
-        },
-      };
+      newTask = await taskController.create(req, {
+        name: mockTask.name,
+        taskListId: taskList.id,
+      });
 
       jest
         .spyOn(taskService, 'create')
-        .mockImplementation(() => Promise.resolve(result));
+        .mockImplementation(() => Promise.resolve(newTask));
 
-      expect(await taskController.create(req, mockTask)).toBe(result);
+      expect(newTask).toEqual(
+        expect.objectContaining({
+          id: expect.any(Number),
+          name: expect.any(String),
+          isCompleted: expect.any(Boolean),
+          TaskList: expect.any(Object),
+        }),
+      );
     });
   });
 
   describe('update', () => {
     it('should update and return task ', async () => {
-      const result = {
-        ...mockTask,
-        TaskList: {
-          id: 20,
-          name: mockTaskList.name,
-        },
-      };
+      const result = await taskController.update(req, {
+        id: newTask.id,
+        name: newTask.name,
+        isCompleted: true,
+      });
+
       jest
         .spyOn(taskService, 'update')
         .mockImplementation(() => Promise.resolve(result));
 
-      expect(await taskController.update(req, { id: 10, ...mockTask })).toBe(
-        result,
+      expect(result).toEqual(
+        expect.objectContaining({
+          id: expect.any(Number),
+          name: expect.any(String),
+          isCompleted: expect.any(Boolean),
+          TaskList: expect.any(Object),
+        }),
       );
     });
   });
 
   describe('get task by id', () => {
     it('should return task  by id', async () => {
-      const result = {
-        id: 23,
-        ...mockTask,
-      };
+      const result = await taskController.getTask(req, newTask.id);
       jest
         .spyOn(taskService, 'getTask')
         .mockImplementation(() => Promise.resolve(result));
 
-      expect(await taskController.getTask(req, 20)).toBe(result);
+      expect(result).toEqual(
+        expect.objectContaining({
+          id: expect.any(Number),
+          name: expect.any(String),
+          isCompleted: expect.any(Boolean),
+          TaskList: expect.any(Object),
+        }),
+      );
     });
   });
 
   describe('remove task by id', () => {
     it('should return task  by id', async () => {
-      const result = {
-        id: 23,
-        ...mockTask,
-      };
+      const result = await taskController.remove(req, newTask.id);
       jest
         .spyOn(taskService, 'remove')
         .mockImplementation(() => Promise.resolve(result));
 
-      expect(await taskController.remove(req, 23)).toBe(result);
+      expect(result).toEqual(
+        expect.objectContaining({
+          id: expect.any(Number),
+          name: expect.any(String),
+          isCompleted: expect.any(Boolean),
+          TaskList: expect.any(Object),
+        }),
+      );
     });
   });
 });

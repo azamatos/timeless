@@ -2,6 +2,12 @@ type Task {
   id: Int!
   name: String!
   isCompleted: Boolean!
+  TaskList: BasicTaskList!
+}
+
+type BasicTaskList {
+  id: Int!
+  name: String!
 }
 
 input CreateTaskInput {
@@ -14,11 +20,9 @@ input UpdateTaskInput {
   id: Int!
   name: String
   isCompleted: Boolean
-  taskListId: Int!
 }
 
 type Query {
-  # getListTasks(id: Int!): [Task]
   getTask(id: Int!): Task
 }
 

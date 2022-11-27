@@ -1,14 +1,40 @@
-import { Test } from '@nestjs/testing';
-import { PrismaService } from '../prisma/prisma.service';
-import { TaskListController } from './task-List.controller';
-import { TaskListService } from './task-List.service';
-import { mockTaskList, mockTask, token } from '../utils/mockData';
 import { Request } from 'express';
+import { Test } from '@nestjs/testing';
+
+// project imports
+import { TaskListController } from './task-List.controller';
+import { PrismaService } from '../prisma/prisma.service';
+import { TaskListService } from './task-List.service';
+import { UserService } from '../user/user.service';
+
+// utils
+import { mockTaskList } from '../utils/mockData';
+
+// types
+import { MutationTaskList } from 'src/types/graphql';
 
 describe('TaskListController', () => {
   let taskListController: TaskListController;
   let taskListService: TaskListService;
+  let taskList: MutationTaskList;
+
   const req: Request = {} as Request;
+
+  beforeAll(async () => {
+    const newUser = {
+      login: new Date().toLocaleTimeString() + 'taskListResolver',
+      password: 'Sunshine',
+    };
+
+    const prisma = new PrismaService();
+    const userService = new UserService(prisma);
+    await userService.register(newUser);
+    const { token } = await userService.login(newUser);
+
+    req.headers = {
+      authorization: token,
+    };
+  });
 
   beforeEach(async () => {
     const moduleRef = await Test.createTestingModule({
@@ -18,108 +44,102 @@ describe('TaskListController', () => {
 
     taskListController = moduleRef.get<TaskListController>(TaskListController);
     taskListService = moduleRef.get<TaskListService>(TaskListService);
-    req.headers = {
-      authorization: token,
-    };
   });
 
   describe('create a task list', () => {
     it('should return task list data', async () => {
-      const result = {
-        id: 23,
-        ...mockTaskList,
-      };
+      taskList = await taskListController.create(req, mockTaskList);
 
       jest
         .spyOn(taskListService, 'create')
-        .mockImplementation(() => Promise.resolve(result));
+        .mockImplementation(() => Promise.resolve(taskList));
 
-      expect(await taskListController.create(req, mockTaskList)).toBe(result);
+      expect(taskList).toEqual(
+        expect.objectContaining({
+          id: expect.any(Number),
+          name: expect.any(String),
+          create: expect.any(Boolean),
+          read: expect.any(Boolean),
+          update: expect.any(Boolean),
+          delete: expect.any(Boolean),
+        }),
+      );
     });
   });
 
   describe('update', () => {
     it('should update and return task list', async () => {
-      const result = {
-        id: 23,
-        ...mockTaskList,
-      };
+      const result = await taskListController.update(req, taskList);
       jest
         .spyOn(taskListService, 'update')
         .mockImplementation(() => Promise.resolve(result));
 
-      expect(
-        await taskListController.update(req, { id: 23, ...mockTaskList }),
-      ).toBe(result);
+      expect(result).toEqual(
+        expect.objectContaining({
+          id: expect.any(Number),
+          name: expect.any(String),
+          create: expect.any(Boolean),
+          read: expect.any(Boolean),
+          update: expect.any(Boolean),
+          delete: expect.any(Boolean),
+        }),
+      );
     });
   });
 
   describe('user lists', () => {
     it('should return user own lists of tasks', async () => {
-      const result = [
-        {
-          id: 23,
-          ...mockTaskList,
-        },
-        {
-          id: 24,
-          ...mockTaskList,
-        },
-      ];
+      const result = await taskListController.getMyLists(req);
       jest
         .spyOn(taskListService, 'getMyLists')
         .mockImplementation(() => Promise.resolve(result));
 
-      expect(await taskListController.getMyLists(req)).toBe(result);
+      expect(result).toContainEqual({
+        id: taskList.id,
+        name: taskList.name,
+        tasks: [],
+      });
     });
   });
 
   describe(`other user's lists`, () => {
     it(`should return other user's lists of tasks`, async () => {
-      const result = [
-        {
-          id: 23,
-          ...mockTaskList,
-        },
-        {
-          id: 24,
-          ...mockTaskList,
-        },
-      ];
+      const result = await taskListController.getOtherLists(req);
       jest
         .spyOn(taskListService, 'getOtherLists')
         .mockImplementation(() => Promise.resolve(result));
 
-      expect(await taskListController.getOtherLists(req)).toBe(result);
+      expect(result.length).toBeGreaterThanOrEqual(0);
     });
   });
 
   describe('get task list by id', () => {
     it('should return task list by id', async () => {
-      const result = {
-        id: 23,
-        ...mockTaskList,
-      };
+      const result = await taskListController.getList(req, taskList.id);
       jest
         .spyOn(taskListService, 'getList')
         .mockImplementation(() => Promise.resolve(result));
 
-      expect(await taskListController.getList(req, 23)).toBe(result);
+      expect(result).toEqual({
+        id: taskList.id,
+        name: taskList.name,
+        tasks: [],
+      });
     });
   });
 
   describe('remove task list by id', () => {
     it('should return task list by id', async () => {
-      const result = {
-        name: mockTaskList.name,
-        tasks: [mockTask],
-        id: 23,
-      };
+      const result = await taskListController.deleteList(req, taskList.id);
       jest
         .spyOn(taskListService, 'remove')
         .mockImplementation(() => Promise.resolve(result));
 
-      expect(await taskListController.deleteList(req, 23)).toBe(result);
+      expect(result).toEqual({
+        id: taskList.id,
+        name: taskList.name,
+        tasks: [],
+      });
     });
   });
 });

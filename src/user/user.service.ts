@@ -6,6 +6,8 @@ import * as bcrypt from 'bcrypt';
 
 // project imports
 import { PrismaService } from '../prisma/prisma.service';
+
+// types
 import { UserInput } from '../types/graphql';
 
 @Injectable()
@@ -20,12 +22,15 @@ export class UserService {
           login,
           password: hashedPassword,
         },
-        select: { login: true },
+        select: { id: true, login: true },
       });
 
       return user;
     } catch (err) {
-      throw new BadRequestException('This user already exists');
+      console.log(err);
+      throw new BadRequestException(
+        'Wrong credential structure or user already exists',
+      );
     }
   }
 

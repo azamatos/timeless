@@ -14,11 +14,16 @@ type LoginResponse {
   token: String!
 }
 
+type UserResponse {
+  id: Int!
+  login: String!
+}
+
 type Query {
   login(loginInput: UserInput): LoginResponse!
 }
 
 type Mutation {
-  register(registerInput: UserInput!): User
-  updatePassword(updateUserInput: UserInput!): User
+  register(registerInput: UserInput!): UserResponse
+  updatePassword(updateUserInput: UserInput!): UserResponse
 }

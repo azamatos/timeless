@@ -34,7 +34,6 @@ export class UpdateTaskInput {
     id: number;
     name?: Nullable<string>;
     isCompleted?: Nullable<boolean>;
-    taskListId: number;
 }
 
 export class UserInput {
@@ -82,15 +81,21 @@ export abstract class IMutation {
 
     abstract removeTask(id: number): Nullable<Task> | Promise<Nullable<Task>>;
 
-    abstract register(registerInput: UserInput): Nullable<User> | Promise<Nullable<User>>;
+    abstract register(registerInput: UserInput): Nullable<UserResponse> | Promise<Nullable<UserResponse>>;
 
-    abstract updatePassword(updateUserInput: UserInput): Nullable<User> | Promise<Nullable<User>>;
+    abstract updatePassword(updateUserInput: UserInput): Nullable<UserResponse> | Promise<Nullable<UserResponse>>;
 }
 
 export class Task {
     id: number;
     name: string;
     isCompleted: boolean;
+    TaskList: BasicTaskList;
+}
+
+export class BasicTaskList {
+    id: number;
+    name: string;
 }
 
 export class User {
@@ -102,6 +107,11 @@ export class User {
 
 export class LoginResponse {
     token: string;
+}
+
+export class UserResponse {
+    id: number;
+    login: string;
 }
 
 type Nullable<T> = T | null;
