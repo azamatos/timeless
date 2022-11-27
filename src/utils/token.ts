@@ -1,6 +1,6 @@
 import { ForbiddenException } from '@nestjs/common';
 
-// third partyF
+// third party
 import * as jwt from 'jsonwebtoken';
 
 export function getToken(token: string) {

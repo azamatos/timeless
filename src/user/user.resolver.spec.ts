@@ -5,19 +5,14 @@ import { PrismaService } from '../prisma/prisma.service';
 import { UserResolver } from './user.resolver';
 import { UserService } from './user.service';
 
+// utils
+import { getRandomLogin } from '../utils/randomGenerator';
+
 describe('UserResolver', () => {
   let resolver: UserResolver;
   let userService: UserService;
-
-  let newUserLogin: string;
-  const login = new Date().toISOString() + 'resolver';
+  const login = getRandomLogin();
   const password = 'timeless2022';
-
-  beforeAll(async () => {
-    const prisma = new PrismaService();
-    const user = new UserService(prisma);
-    await user.register({ login, password });
-  });
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -26,8 +21,6 @@ describe('UserResolver', () => {
 
     resolver = module.get<UserResolver>(UserResolver);
     userService = module.get<UserService>(UserService);
-
-    newUserLogin = new Date().toLocaleString();
   });
 
   it('should be defined', () => {
@@ -36,7 +29,7 @@ describe('UserResolver', () => {
 
   describe('registering a user', () => {
     it('should return user unique login', async () => {
-      const user = await resolver.register({ login: newUserLogin, password });
+      const user = await resolver.register({ login, password });
 
       jest
         .spyOn(userService, 'register')

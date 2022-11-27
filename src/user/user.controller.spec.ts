@@ -5,22 +5,14 @@ import { PrismaService } from '../prisma/prisma.service';
 import { UserController } from './user.controller';
 import { UserService } from './user.service';
 
+// utils
+import { getRandomLogin } from '../utils/randomGenerator';
+
 describe('UserController', () => {
   let userController: UserController;
   let userService: UserService;
-  let newUserLogin: string;
-  const login = new Date().toISOString();
+  const login = getRandomLogin();
   const password = 'timeless2022';
-
-  beforeAll(async () => {
-    const prisma = new PrismaService();
-    const user = new UserService(prisma);
-    await user.register({ login, password });
-  });
-
-  beforeAll(() => {
-    newUserLogin = new Date().toLocaleString() + 'controller';
-  });
 
   beforeEach(async () => {
     const moduleRef = await Test.createTestingModule({
@@ -35,7 +27,7 @@ describe('UserController', () => {
   describe('registering a user', () => {
     it('should return user unique login', async () => {
       const user = await userController.register({
-        login: newUserLogin,
+        login,
         password,
       });
 

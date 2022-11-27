@@ -117,7 +117,12 @@ export class TaskService {
       if (task) {
         return this.prisma.task.delete({
           where: { id: task.id },
-          select: { id: true, name: true, isCompleted: true, TaskList: true },
+          select: {
+            id: true,
+            name: true,
+            isCompleted: true,
+            TaskList: { select: { id: true, name: true } },
+          },
         });
       }
     } catch (err) {

@@ -83,7 +83,12 @@ export class TaskListService {
         select: { id: true, name: true, tasks: true },
       });
 
-      return taskList ? taskList : ({} as TaskList);
+      if (!taskList) {
+        throw new BadRequestException(
+          'You dont have rights or such task list doesnt exist',
+        );
+      }
+      return taskList;
     } catch (err) {
       throw new BadRequestException('Please check ur input data and rights');
     }

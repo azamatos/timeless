@@ -10,6 +10,7 @@ import { TaskService } from './task.service';
 
 // utils
 import { mockTask, mockTaskList } from '../utils/mockData';
+import { getRandomLogin } from '../utils/randomGenerator';
 
 // types
 import { TaskList, Task } from 'src/types/graphql';
@@ -23,7 +24,7 @@ describe('TaskController', () => {
 
   beforeAll(async () => {
     const newUser = {
-      login: new Date().toUTCString() + 'taskController',
+      login: getRandomLogin(),
       password: 'New Year',
     };
 

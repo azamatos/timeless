@@ -6,6 +6,7 @@ import { TaskListService } from './task-list.service';
 import { UserService } from '../user/user.service';
 
 // utils
+import { getRandomLogin } from '../utils/randomGenerator';
 import { mockTaskList } from '../utils/mockData';
 
 // types
@@ -18,7 +19,7 @@ describe('TaskListService', () => {
 
   beforeAll(async () => {
     const newUser = {
-      login: new Date().toLocaleTimeString() + 'taskListService',
+      login: getRandomLogin(),
       password: 'Sunshine',
     };
 

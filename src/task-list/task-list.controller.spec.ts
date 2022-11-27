@@ -8,6 +8,7 @@ import { TaskListService } from './task-List.service';
 import { UserService } from '../user/user.service';
 
 // utils
+import { getRandomLogin } from '../utils/randomGenerator';
 import { mockTaskList } from '../utils/mockData';
 
 // types
@@ -22,7 +23,7 @@ describe('TaskListController', () => {
 
   beforeAll(async () => {
     const newUser = {
-      login: new Date().toLocaleTimeString() + 'taskListResolver',
+      login: getRandomLogin(),
       password: 'Sunshine',
     };
 

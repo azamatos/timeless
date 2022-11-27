@@ -4,17 +4,13 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { PrismaService } from '../prisma/prisma.service';
 import { UserService } from './user.service';
 
+// utils
+import { getRandomLogin } from '../utils/randomGenerator';
+
 describe('UserService', () => {
   let service: UserService;
-  let newUserLogin: string;
-  const login = new Date().toISOString() + 'service';
+  const login = getRandomLogin();
   const password = 'timeless2022';
-
-  beforeAll(async () => {
-    const prisma = new PrismaService();
-    const user = new UserService(prisma);
-    await user.register({ login, password });
-  });
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -22,8 +18,6 @@ describe('UserService', () => {
     }).compile();
 
     service = module.get<UserService>(UserService);
-
-    newUserLogin = new Date().toLocaleString();
   });
 
   it('should be defined', () => {
@@ -33,7 +27,7 @@ describe('UserService', () => {
   describe('register', () => {
     it('register a user and return login', async () => {
       const registerFunc = await service.register({
-        login: newUserLogin,
+        login,
         password,
       });
       expect(registerFunc).toEqual(
